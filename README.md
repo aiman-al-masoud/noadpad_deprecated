@@ -30,4 +30,5 @@ Some of the more common features include:
 - global search by keywords.
 - option to adjust the text size.
 - note files get automatically sorted by their date last-edited.
+- share the text of a note file.
 
