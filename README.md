@@ -29,5 +29,5 @@ Some of the more common features include:
 - creating, editing, deleting multiple text files.
 - global search by keywords.
 - option to adjust the text size.
-- note files get automatically sorted by their date last edited.
+- note files get automatically sorted by their date last-edited.
 
