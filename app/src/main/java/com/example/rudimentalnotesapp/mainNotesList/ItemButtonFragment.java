@@ -27,6 +27,7 @@ import com.example.rudimentalnotesapp.encryption.DecryptFragment;
 import com.example.rudimentalnotesapp.encryption.EncryptFragment;
 import com.example.rudimentalnotesapp.collections.Collection;
 import com.example.rudimentalnotesapp.filesystem.NoteFolder;
+import com.example.rudimentalnotesapp.sharing.Share;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -271,6 +272,10 @@ public class ItemButtonFragment extends Fragment {
                                     }
                                     decrFrag.show(getFragmentManager(), "tag");
                                     break;
+                                case "share":
+                                    Share.shareText(noteFolder.getNotesText());
+                                    break;
+
                             }
 
 

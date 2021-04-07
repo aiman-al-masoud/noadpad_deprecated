@@ -28,4 +28,7 @@
         android:id="@+id/removeFromCollectionItem"
         android:title="remove from collection"
         android:visible="false" />
+    <item
+        android:id="@+id/shareMenuItem"
+        android:title="share" />
 </menu>

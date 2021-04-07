@@ -35,6 +35,7 @@ import com.example.rudimentalnotesapp.filesystem.NoteFolder;
 import com.example.rudimentalnotesapp.filesystem.NoteFolderManager;
 import com.example.rudimentalnotesapp.settings.Settings;
 import com.example.rudimentalnotesapp.settings.SettingsActivity;
+import com.example.rudimentalnotesapp.sharing.Share;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
@@ -137,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
 
                 longPressMenu.show();
 
+
+
                 return true;
             }
         });
@@ -149,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new SearchDialogFragment().show(getSupportFragmentManager(), "SeachDialogFragment");
+
             }
         });
 
