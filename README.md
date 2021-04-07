@@ -14,3 +14,5 @@ calculation with Java's rich Math "library". (Beanshell's repo and license: http
 - note-compacter feature: allows you to easily merge many smaller note files into a single big one. It can be useful
 for unifying scattered pieces of a larger work, once you realize they should all stay together.
 
+- download text from a webpage: this feature is still experimental. It makes use of the Jsoup library to
+download (for now just the text) of a webpage, given a full link to it. (Jsoup's repo and license: https://github.com/jhy/jsoup/blob/master/LICENSE).
