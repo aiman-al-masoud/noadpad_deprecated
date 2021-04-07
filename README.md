@@ -2,7 +2,7 @@
 No-Ad-Pad is a simple, ad-free (as the name says), notes app for Android. In addition to the core note-taking functionalities, 
 I've decided to include some fairly uncommon features for an Android notes app, including:
 
-- self organizing collections: you can create collections of note files, and each collection can have a list of tags.
+- self-organizing collections: you can create collections of note files, and each collection can have a list of tags.
  If the option is enabled, the app will automatically parse your note files' text for tags, adding each note 
  file to an appropriate user-defined collection. For example: if you want to make sure that every note file 
  with the words: "github" or "java" appear in one place, you can create a collection, say "projects", and add to it the tags 
