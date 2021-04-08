@@ -1,5 +1,5 @@
 # noadpad
-No-Ad-Pad is a simple, ad-free (as the name says), notes app for Android. In addition to the core note-taking functionalities, 
+No-Ad-Pad is a simple, ad-free (as the name implies), notes app for Android. In addition to the core note-taking functionalities, 
 I've decided to include some fairly uncommon features for an Android notes app, including:
 
 - self-organizing collections: you can create collections of note files, and each collection can have a list of tags.
@@ -31,4 +31,5 @@ Some of the more common features include:
 - option to adjust the text size.
 - note files get automatically sorted by their date last-edited.
 - share the text of a note file.
+- color themes.
 
