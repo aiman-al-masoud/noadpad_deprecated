@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -47,8 +48,19 @@ public class TextEditorActivity extends AppCompatActivity {
         //get text area
         textArea = findViewById(R.id.textArea);
 
+        //get text size from global settings and set it
         textSize = Settings.getTextSize();
         textArea.setTextSize(textSize);
+
+
+        //get background color from settings and set it
+        int bgColor = Settings.getBackgroundForegroundColor(0);
+        textArea.setBackgroundColor(bgColor);
+
+        //get foreground color from global settings and set it
+        int fgColor = Settings.getBackgroundForegroundColor(1);
+        textArea.setTextColor(fgColor);
+
 
         //get intent from caller
         intent = getIntent();

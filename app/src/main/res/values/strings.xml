@@ -2,4 +2,16 @@
     <string name="app_name">NoAdPad</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <string-array name="color_themes_array">
+        <item>DEFAULT</item>
+        <item>DARK MODE</item>
+        <item>SEPIA</item>
+        <item>BLUE</item>
+    </string-array>
+
+
+
+
 </resources>

@@ -1,5 +1,6 @@
 package com.example.rudimentalnotesapp.settings;
 
+import android.graphics.Color;
 import android.util.Log;
 
 import com.example.rudimentalnotesapp.mainNotesList.MainActivity;
@@ -13,8 +14,9 @@ public class Settings {
     //references to (maybe not yet extant) files
     public static File settingsFolder = new File(MainActivity.rootDir.getPath()+"/settings");
     public static File textSizeFile = new File(settingsFolder.getPath()+"/textSize.txt");
+    public static File backgroundAndForegroundColorFile = new File(settingsFolder.getPath()+"/backgroundAndForegroundColor.txt"); //background on line one. foreground on line two.
+    public static File currentColorThemeFile =  new File(settingsFolder.getPath()+"/currentColorTheme.txt"); //it's an integer ID 0:default, 1:dark ...
     public static File selfSortingCollectionsFlagFile = new File(settingsFolder.getPath()+"/selfSortingCollectionsFlag.txt");
-
 
     //settings folder is in the same dir
     //as all of the note folders.
@@ -71,6 +73,62 @@ public class Settings {
         return 18;
     }
 
+    //get background/foreground color.
+    // bgOrFg = 0 => background, bgOrFg = 1 => gets foreground
+    public static int getBackgroundForegroundColor(int bgOrFg){
+
+        //background color on first line of this file
+        String colorInfo = FileIO.readFile(backgroundAndForegroundColorFile);
+
+        try{
+            //get background color name
+            String backgroundColorName = colorInfo.split("\n")[bgOrFg].trim().toUpperCase();
+
+           int bgColor =  (int)Color.class.getField(backgroundColorName).get(null);
+           return bgColor;
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        //return default background/foreground color
+        if(bgOrFg==0){
+            //default background is white
+            return Color.WHITE;
+        }
+
+        //default foreground is black
+        return Color.BLACK;
+    }
+
+    //set background and foreground color
+    public static void setBackgroundAndForegroundColor(String bg, String fg){
+        bg = bg.trim().toUpperCase();
+        fg = fg.trim().toUpperCase();
+        FileIO.writeToFile(backgroundAndForegroundColorFile, bg+"\n"+fg);
+    }
+
+
+
+
+    //get current default color theme
+    public static int getCurrentColorTheme() {
+        try{
+            return Integer.parseInt(FileIO.readFile(currentColorThemeFile).trim());
+        }catch (Exception e){
+
+        }
+        return 0; //DEFAULT theme
+    }
+
+    //set current default color theme
+    public static void setCurrentColorTheme(int i) {
+        FileIO.writeToFile(currentColorThemeFile, i+"");
+    }
+
+
+
+
     //USEFUL FOR UPDATES:
     //create all settings files that don't esixst yet
     public static void createNonExistingFiles(){
@@ -126,4 +184,6 @@ public class Settings {
 
 
 
-}
+
+
+    }

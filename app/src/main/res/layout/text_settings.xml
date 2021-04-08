@@ -31,12 +31,34 @@
 
     <TextView
         android:id="@+id/textSettingsMsg1"
-        android:layout_width="206dp"
-        android:layout_height="40dp"
+        android:layout_width="303dp"
+        android:layout_height="52dp"
         android:layout_marginBottom="10dp"
-        android:text="enter a new text size"
+        android:text="enter a new text size: (default = 18)"
         app:layout_constraintBottom_toTopOf="@+id/textSizeInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.146"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textSettingsMsg2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="pick a color-theme:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.092"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textSizeInput" />
+
+    <Spinner
+        android:id="@+id/themesDropDownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textSettingsMsg2" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

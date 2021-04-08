@@ -20,13 +20,13 @@ public class SettingsActivity extends AppCompatActivity {
     Switch toggleSelfSortingCollections;
 
     //autoreference
-    AppCompatActivity eigenReference;
+    public static SettingsActivity settingsActivity;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         //set autoreference
-        eigenReference = this;
+        settingsActivity = this;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
@@ -74,8 +74,17 @@ public class SettingsActivity extends AppCompatActivity {
 
 
 
+        resetColors();
     }
 
+    //reset colors
+    public void resetColors(){
+        //set this activity's background color according to global settings
+        int fgColor = Settings.getBackgroundForegroundColor(1);
+        this.getWindow().getDecorView().setBackgroundColor(Settings.getBackgroundForegroundColor(0));
+        textStyleSubMenuButton.setTextColor(fgColor);
+        toggleSelfSortingCollections.setTextColor(fgColor);
+    }
 
 
 

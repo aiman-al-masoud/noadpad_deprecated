@@ -1,6 +1,7 @@
 package com.example.rudimentalnotesapp.mainNotesList;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,7 +28,10 @@ import com.example.rudimentalnotesapp.encryption.DecryptFragment;
 import com.example.rudimentalnotesapp.encryption.EncryptFragment;
 import com.example.rudimentalnotesapp.collections.Collection;
 import com.example.rudimentalnotesapp.filesystem.NoteFolder;
+import com.example.rudimentalnotesapp.settings.Settings;
 import com.example.rudimentalnotesapp.sharing.Share;
+
+
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -47,6 +51,12 @@ public class ItemButtonFragment extends Fragment {
     //this item's button contains the title.
     public String title;
 
+    //displays date last edited for this item
+    TextView datesText;
+
+    //button to access this item's notes folder
+    Button button;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Nullable
     @Override
@@ -61,7 +71,7 @@ public class ItemButtonFragment extends Fragment {
         try{
             //change name of button according to
             //contents of file
-             Button button = view.findViewById(R.id.button);
+            button = view.findViewById(R.id.button);
             String fileText = noteFolder.getNotesText();
 
             try{
@@ -88,7 +98,7 @@ public class ItemButtonFragment extends Fragment {
             try{
                 //display date created and date last modified
                 //on datesText part of a fragment
-                TextView datesText = (TextView)view.findViewById(R.id.datesText);
+                datesText = (TextView)view.findViewById(R.id.datesText);
 
                 datesText.setText("last edited: "+noteFolder.getDateLastModified().toString().substring(0, noteFolder.getDateLastModified().toString().indexOf("T")));
 
@@ -298,6 +308,16 @@ public class ItemButtonFragment extends Fragment {
         //get this item's check box
         checkBox = (CheckBox) view.findViewById(R.id.noteItemCheckBox);
 
+
+
+        //set this item's backround and foreground according
+        //to global settings
+        int bgColor = Settings.getBackgroundForegroundColor(0);
+        int fgColor = Settings.getBackgroundForegroundColor(1);
+        view.getRootView().setBackgroundColor(bgColor);
+        datesText.setTextColor(fgColor);
+        button.setTextColor(fgColor);
+
         return view;
     }
 
@@ -340,7 +360,6 @@ public class ItemButtonFragment extends Fragment {
     public void deleteNoteFolder(){
         noteFolder.delete();
     }
-
 
 
 

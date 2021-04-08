@@ -60,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     //current collection on display
     public static Collection currentlyDisplayedCollection;
 
+    //TODO: refresh tag: tells the main activity it has to refresh its list
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -199,8 +202,13 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        //set this activity's background color according to global settings
+        this.getWindow().getDecorView().setBackgroundColor(Settings.getBackgroundForegroundColor(0));
+
+
         //if it doesn't exist yet
         Settings.createSettingsFolder();
+
     }
 
 
@@ -220,7 +228,6 @@ public class MainActivity extends AppCompatActivity {
         refreshAndReaddAll();
         //reset to no collection displayed
         setCurrentlyDisplayedCollection(null);
-
 
     }
 
