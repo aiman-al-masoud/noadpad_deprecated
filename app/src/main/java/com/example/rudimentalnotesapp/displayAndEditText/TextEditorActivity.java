@@ -56,6 +56,7 @@ public class TextEditorActivity extends AppCompatActivity {
         //get background color from settings and set it
         int bgColor = Settings.getBackgroundForegroundColor(0);
         textArea.setBackgroundColor(bgColor);
+        this.getWindow().getDecorView().setBackgroundColor(bgColor);
 
         //get foreground color from global settings and set it
         int fgColor = Settings.getBackgroundForegroundColor(1);
