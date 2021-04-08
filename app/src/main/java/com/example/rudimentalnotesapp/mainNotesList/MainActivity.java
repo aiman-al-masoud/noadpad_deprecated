@@ -1,47 +1,36 @@
 package com.example.rudimentalnotesapp.mainNotesList;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
-import androidx.lifecycle.ProcessLifecycleOwner;
 
 import android.content.Context;
 
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.format.Time;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.rudimentalnotesapp.R;
 import com.example.rudimentalnotesapp.displayAndEditText.TextEditorActivity;
-import com.example.rudimentalnotesapp.allPurposeFragments.SearchDialogFragment;
+import com.example.rudimentalnotesapp.search.SearchDialogFragment;
 import com.example.rudimentalnotesapp.collections.Collection;
 import com.example.rudimentalnotesapp.collections.CreateCollectionFragment;
 import com.example.rudimentalnotesapp.collections.OpenCollectionFragment;
 import com.example.rudimentalnotesapp.downloads.DownloadWebpageFragment;
-import com.example.rudimentalnotesapp.downloads.DownloaderTask;
-import com.example.rudimentalnotesapp.filesystem.FileIO;
 import com.example.rudimentalnotesapp.filesystem.NoteFolder;
 import com.example.rudimentalnotesapp.filesystem.NoteFolderManager;
 import com.example.rudimentalnotesapp.settings.Settings;
 import com.example.rudimentalnotesapp.settings.SettingsActivity;
-import com.example.rudimentalnotesapp.sharing.Share;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
     //FAB to launch settings activity
     FloatingActionButton settingsButton;
-
-
 
     //current collection on display
     public static Collection currentlyDisplayedCollection;
@@ -126,24 +113,16 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.downloadPageFromWebItem:
                                 DownloadWebpageFragment downloadWebpageFragment = new DownloadWebpageFragment();
                                 downloadWebpageFragment.show(getSupportFragmentManager(), "download page fragment");
-
                                 break;
-
-
                         }
                         return true;
                     }
                 });
-
-
+                //show long press menu
                 longPressMenu.show();
-
-
-
                 return true;
             }
         });
-
 
 
         //get search fab and set its action
@@ -155,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
 
         //get options fab and set its action
         settingsButton = findViewById(R.id.settingsButton);
@@ -169,15 +147,15 @@ public class MainActivity extends AppCompatActivity {
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        if(item.getTitle().equals("settings")){
+                        if(item.getItemId() == R.id.settingsMenuItem){
                             Intent intent = new Intent(MainActivity.mainActivityContext, SettingsActivity.class);
                             startActivity(intent);
                         }
-
                         return true;
                     }
                 });
 
+                //show popup menu
                 popupMenu.show();
             }
         });
@@ -197,19 +175,17 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
 
-                        switch (item.getTitle().toString()){
-                            case "make collection":
+                        switch (item.getItemId()){
+                            case R.id.makeCollectionItem:
                                 //display create collection dialog fragment
                                 CreateCollectionFragment createCollectionFragment = new CreateCollectionFragment();
                                 createCollectionFragment.show(getSupportFragmentManager(), "create collection fragment");
                                 break;
-                            case "show collections":
+                            case R.id.showCollectionsItem:
                                 //display show collections fragment
                                 OpenCollectionFragment showCollectionsFragment = new OpenCollectionFragment();
                                 showCollectionsFragment.show(getSupportFragmentManager(), "show collections fragment");
                                 break;
-
-
                         }
 
                         return true;
@@ -218,9 +194,6 @@ public class MainActivity extends AppCompatActivity {
 
                 //show collections manager menu
                 collectionsPopupMenu.show();
-
-
-
             }
         });
 
@@ -228,9 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
         //if it doesn't exist yet
         Settings.createSettingsFolder();
-
-
-
     }
 
 
@@ -239,6 +209,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onPostResume() {
         super.onPostResume();
 
+        //if the currently displayed collection
+        //(permanent or temporary) is not null,
+        //then do not reload list items.
         if(currentlyDisplayedCollection!=null){
            return;
         }
@@ -247,6 +220,8 @@ public class MainActivity extends AppCompatActivity {
         refreshAndReaddAll();
         //reset to no collection displayed
         setCurrentlyDisplayedCollection(null);
+
+
     }
 
     @Override
@@ -261,15 +236,6 @@ public class MainActivity extends AppCompatActivity {
     //add an item to the currentItemsList and stick it to the
     //activity visually
     public void addItemToCurrentItemList(NoteFolder itemsNoteFolder){
-        if(itemsNoteFolder == null){
-            return;
-        }
-
-        for(ItemButtonFragment item : currentItemsList){
-            if(item.getNoteFolder().equals(itemsNoteFolder)){
-                return;
-            }
-        }
 
         //make a new visual item
         ItemButtonFragment newItem = new ItemButtonFragment();
@@ -277,7 +243,6 @@ public class MainActivity extends AppCompatActivity {
         newItem.setNoteFolder(itemsNoteFolder);
         //add the item to the current list
         currentItemsList.add(newItem);
-
         //add new item to this activity
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.linearLayout, newItem, null).commit();
@@ -301,48 +266,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //make a new file and give it an integer ID
-    //the lowest still available integer
-    public File makeNewDocFile(){
-
-        //get all files
-        File[] filesList = FileIO.getMyNoteFiles();
-
-        //if there are no files yet, just return file with
-        //name: file0.txt
-        if(filesList.length==0){
-            return FileIO.createNewFile("file0");
-        }
-
-        //find maximum int used for file name
-        Arrays.sort(filesList, new Comparator<File>() {
-            @Override
-            public int compare(File file1, File file2) {
-
-                try{
-                    //get int 1
-                    int int1 = Integer.parseInt(file1.getName().replace("file", "").replace(".txt", "").trim());
-
-                    //get int 2
-                    int int2 = Integer.parseInt(file2.getName().replace("file", "").replace(".txt", "").trim());
-                    return int2-int1;
-                }catch (NumberFormatException e){
-                   e.printStackTrace();
-                }
-
-                return 0;
-            }
-        });
-
-
-        int nextIntID = Integer.parseInt(filesList[0].getName().replace("file", "").replace(".txt", "").trim())+1;
-
-
-        //create and return a new file with this ID
-        return FileIO.createNewFile("file"+nextIntID);
+    //refresh and add all
+    public void refreshAndReaddAll(){
+        removeAllItems();
+        addAll();
     }
 
-    //add items selectively
+    //add items selectively: given a list of note folders
+    //add a list of corresponding list items
     public void removeAllAndAddSelection(ArrayList<NoteFolder> noteFolders){
         //remove everything
         removeAllItems();
@@ -352,11 +283,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //refresh and add all
-    public void refreshAndReaddAll(){
-        removeAllItems();
-        addAll();
-    }
+
+
 
     //turn on check-box selection for all items
     public void displayCheckBoxes(){
@@ -384,19 +312,17 @@ public class MainActivity extends AppCompatActivity {
         return selection;
     }
 
-
-    //delete selection
+    //delete selection: delete all corresponding note folders
     public void deleteSelection(){
         for(ItemButtonFragment item : getSelection()){
             item.deleteNoteFolder();
         }
     }
 
-    //compact selection in one new big notes folder,
-    //then delete selection
+    //compact selection in one single new big notes folder,
+    //then delete old smaller note folders
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void compactSelection(){
-
         //get all of the notes from all of the
         //selected folders in one buffer
         String buf = "";
@@ -424,7 +350,6 @@ public class MainActivity extends AppCompatActivity {
     //set notes list title (display a title for the current list)
     public void setNotesListTitle(String title){
         ((TextView)findViewById(R.id.notesListTitle)).setText(title);
-
     }
 
 

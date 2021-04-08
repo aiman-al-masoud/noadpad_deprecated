@@ -128,7 +128,7 @@ public class ItemButtonFragment extends Fragment {
                         popupMenu.getMenu().findItem(R.id.encryptDectyptItem).setTitle(popupMenu.getMenu().findItem(R.id.encryptDectyptItem).getTitle()+" all");
                     }
 
-                    //if a collection's being displayed, activate the collections menu item
+                    //if a collection's being displayed, activate the collection-related menu items
                     Collection currentCollection = null;
                     if((currentCollection = MainActivity.currentlyDisplayedCollection)!=null){
                         popupMenu.getMenu().findItem(R.id.removeFromCollectionItem).setVisible(true);
@@ -320,7 +320,6 @@ public class ItemButtonFragment extends Fragment {
         this.noteFolder = noteFolder;
     }
 
-
     //turn on/off visibility for this item's checkbox
     //NB: use View.VISIBLE
     public void setCheckBoxVisibility(int visible){
@@ -332,7 +331,7 @@ public class ItemButtonFragment extends Fragment {
         checkBox.setChecked(bool);
     }
 
-    //is checkbox checked? IE: ticked?
+    //is checkbox checked? ie: ticked?
     public boolean isCheckedBox(){
         return checkBox.isChecked();
     }

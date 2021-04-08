@@ -14,18 +14,24 @@ import java.util.Comparator;
 
 public class NoteFolderManager {
 
+    //the path to the directory all of the note folders are stored in
     static String rootPath = MainActivity.rootDir.getPath();
+
+    //the list of all currently existing note folders
+    static ArrayList<NoteFolder> currentNoteFoldersList = new ArrayList<NoteFolder>();
 
 
     //actually creates it IN STORAGE in this app's rootDir path
     public static NoteFolder createNoteFolder(String name){
 
-        NoteFolder noteFolder = new NoteFolder(rootPath+"/"+name);
+        NoteFolder newNoteFolder = new NoteFolder(rootPath+"/"+name);
 
         //call overridden version of mkdir
-        //that creates the notesFile too
-        noteFolder.mkdir();
-        return noteFolder;
+        //that creates the internal files too
+        newNoteFolder.mkdir();
+
+
+        return newNoteFolder;
     }
 
 
@@ -58,24 +64,25 @@ public class NoteFolderManager {
 
     //get all existing note folders
     public static ArrayList<NoteFolder> getAllNoteFolders(){
-        ArrayList<NoteFolder> noteFolders = new ArrayList<NoteFolder>();
 
+        //TODO: optimize this, don't load from storage all the time
+        currentNoteFoldersList.clear();
         for(File file : FileIO.getMyFiles()){
             if(file.getName().contains("noteFolder")){
-                noteFolders.add(new NoteFolder(file.getPath()));
-                Log.d("NOTE_FOLDER_TEST", file.getName());
+                currentNoteFoldersList.add(new NoteFolder(file.getPath()));
             }
         }
 
         //sort note folders by date-time last edited
-        Collections.sort(noteFolders, new Comparator<NoteFolder>() {
+        Collections.sort(currentNoteFoldersList, new Comparator<NoteFolder>() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public int compare(NoteFolder o1, NoteFolder o2) {
                 return o2.getDateLastModified().compareTo(o1.getDateLastModified());
             }
         });
-        return noteFolders;
+
+        return currentNoteFoldersList;
     }
 
     //get a single note folder by its ID

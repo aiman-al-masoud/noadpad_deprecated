@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 
 import com.example.rudimentalnotesapp.R;
+import com.example.rudimentalnotesapp.collections.TemporaryCollection;
 import com.example.rudimentalnotesapp.filesystem.NoteFolder;
 import com.example.rudimentalnotesapp.filesystem.NoteFolderManager;
 import com.example.rudimentalnotesapp.mainNotesList.MainActivity;

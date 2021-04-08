@@ -1,4 +1,4 @@
-package com.example.rudimentalnotesapp.allPurposeFragments;
+package com.example.rudimentalnotesapp.search;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.rudimentalnotesapp.collections.TemporaryCollection;
 import com.example.rudimentalnotesapp.mainNotesList.MainActivity;
 import com.example.rudimentalnotesapp.R;
 import com.example.rudimentalnotesapp.filesystem.NoteFolder;
@@ -35,6 +37,10 @@ public class SearchDialogFragment extends DialogFragment {
         //get search bar
         searchBar = view.findViewById(R.id.searchBar);
 
+        //get message box and set it
+        ((TextView)view.findViewById(R.id.textInputPromptMessage)).setText("enter keyword(s):");
+
+
         //set go button listener
         goButton.setOnClickListener(new View.OnClickListener(){
 
@@ -53,6 +59,12 @@ public class SearchDialogFragment extends DialogFragment {
                        Log.d("RELEVANT_FOLDERS", noteFolder.getNotesText());
                    }
                 }
+
+
+                //set a new (empty) temporary collection as the current collection
+                TemporaryCollection tmpCollection = new TemporaryCollection("query results");
+                MainActivity.mainActivity.setCurrentlyDisplayedCollection(tmpCollection);
+
 
                 //call main activity telling it to display only relevant note files
                 MainActivity.mainActivity.removeAllAndAddSelection(relevantNoteFolders);
