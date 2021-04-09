@@ -1,5 +1,7 @@
 package com.example.rudimentalnotesapp.filesystem;
 
+import android.util.Log;
+
 import com.example.rudimentalnotesapp.mainNotesList.MainActivity;
 
 import java.io.BufferedReader;
@@ -87,6 +89,7 @@ public class FileIO {
         return rootDir.listFiles();
     }
 
+
     //get JUST my note fileslistFiles()
     public static File[] getMyNoteFiles(){
         ArrayList<File> noteFilesList = new ArrayList<File>();
@@ -124,6 +127,14 @@ public class FileIO {
     }
 
 
+    //debug: print all folders and (by chance) files
+    //in this app's root dir
+    public static void printRootDirList(){
+        Log.d("FILESYSTEM_DEBUG", "Path\tLastModified");
+        for(File file : getMyFiles()){
+            Log.d("FILESYSTEM_DEBUG", file.getPath()+"\t"+file.lastModified());
+        }
+    }
 
 
 

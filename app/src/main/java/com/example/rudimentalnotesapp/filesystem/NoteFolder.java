@@ -113,6 +113,13 @@ public class NoteFolder extends File {
     public boolean searchForKeywordInNotesText(String keyword){
         String notesText = FileIO.readFile(notesTextFile);
 
+        //TODO: GHOST FILE PROBLEM!
+        if(notesText==null){
+            Log.d("GHOST_FILE", this.getPath()+this.getDateLastModifiedString());
+            //this.deleteOnExit();
+            return false;
+        }
+
         //ignore empty keywords
         if(keyword.trim().isEmpty()){
             return false;

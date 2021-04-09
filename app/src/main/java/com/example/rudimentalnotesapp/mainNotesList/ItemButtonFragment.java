@@ -163,6 +163,7 @@ public class ItemButtonFragment extends Fragment {
                                         String script = noteFolder.getNotesText();
                                         Object result = interpreter.eval(script);
 
+
                                         //switch to displaying results of execution on the text editor
                                         Intent intent = new Intent(MainActivity.mainActivity, TextEditorActivity.class);
                                         intent.putExtra("TEXT_TO_BE_DISPLAYED", result.toString());

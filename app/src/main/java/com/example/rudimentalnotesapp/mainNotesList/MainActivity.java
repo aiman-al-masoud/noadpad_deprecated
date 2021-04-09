@@ -15,6 +15,7 @@ import com.example.rudimentalnotesapp.collections.CreateCollectionFragment;
 import com.example.rudimentalnotesapp.collections.OpenCollectionFragment;
 import com.example.rudimentalnotesapp.displayAndEditText.TextEditorActivity;
 import com.example.rudimentalnotesapp.downloads.DownloadWebpageFragment;
+import com.example.rudimentalnotesapp.filesystem.FileIO;
 import com.example.rudimentalnotesapp.filesystem.NoteFolder;
 import com.example.rudimentalnotesapp.filesystem.NoteFolderManager;
 import com.example.rudimentalnotesapp.search.SearchDialogFragment;
@@ -67,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
 
         //if it doesn't exist yet
         Settings.createSettingsFolder();
+
+
+
 
         //get new-folder FAB and set its action
         newFileButton = findViewById(R.id.createNewFileFAB);
