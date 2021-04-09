@@ -13,7 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class NoteFolder extends File {
 
@@ -41,6 +43,8 @@ public class NoteFolder extends File {
         notesTextFile = new File(pathname+"/notesTextFile.txt");
         encryptedFlagFile = new File(pathname+"/encryptedFlagFile.txt");
         linkedToCollectionsFile = new File(pathname+"/linkedToCollections.txt");
+
+
 
         //if this folder exists, yet some of its
         //internal files don't, create them
@@ -142,16 +146,27 @@ public class NoteFolder extends File {
 
 
     //get date last modified (of notes file)
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public java.nio.file.attribute.FileTime getDateLastModified(){
+    public Date getDateLastModified(){
         try {
-            BasicFileAttributes fileAttributes = Files.readAttributes(notesTextFile.toPath(), BasicFileAttributes.class);
-            return fileAttributes.lastModifiedTime();
-        } catch (IOException e) {
+            //TEST
+            //Log.d("DATE_TEST",new SimpleDateFormat("dd/MM/yyyy").format(new Date(notesTextFile.lastModified())));
+            Date dateLastModified = new Date(notesTextFile.lastModified());
+            Log.d("DATES_TEST",dateLastModified.toString());
+            return dateLastModified;
+            //BasicFileAttributes fileAttributes = Files.readAttributes(notesTextFile.toPath(), BasicFileAttributes.class);
+            //return fileAttributes.lastModifiedTime();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
+
+    //get date last modfied string
+    public String getDateLastModifiedString(){
+        return new SimpleDateFormat("dd/MM/yyyy hh:mm").format( getDateLastModified());
+    }
+
 
 
     // If this folder exists, yet some of its

@@ -1,9 +1,6 @@
 package com.example.rudimentalnotesapp.filesystem;
 
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.example.rudimentalnotesapp.mainNotesList.MainActivity;
 
@@ -75,7 +72,6 @@ public class NoteFolderManager {
 
         //sort note folders by date-time last edited
         Collections.sort(currentNoteFoldersList, new Comparator<NoteFolder>() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public int compare(NoteFolder o1, NoteFolder o2) {
                 return o2.getDateLastModified().compareTo(o1.getDateLastModified());

@@ -6,7 +6,7 @@ import android.view.KeyEvent;
 public class SimulateKeyPress {
 
     public static void press(int KeyEvent){
-        new Thread(new Runnable() {
+         new Thread(new Runnable() {
             @Override
             public void run() {
                 Instrumentation inst = new Instrumentation();

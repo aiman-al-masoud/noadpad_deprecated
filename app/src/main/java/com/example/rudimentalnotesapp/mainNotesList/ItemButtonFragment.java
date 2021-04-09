@@ -57,12 +57,9 @@ public class ItemButtonFragment extends Fragment {
     //button to access this item's notes folder
     Button button;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-
 
 
         View view = inflater.inflate(R.layout.fragment_item_button, container, false);
@@ -96,11 +93,10 @@ public class ItemButtonFragment extends Fragment {
 
 
             try{
-                //display date created and date last modified
+                //display date last modified
                 //on datesText part of a fragment
                 datesText = (TextView)view.findViewById(R.id.datesText);
-
-                datesText.setText("last edited: "+noteFolder.getDateLastModified().toString().substring(0, noteFolder.getDateLastModified().toString().indexOf("T")));
+                datesText.setText("last edited: "+noteFolder.getDateLastModifiedString());
 
 
             }catch (NoSuchMethodError e){
@@ -157,6 +153,7 @@ public class ItemButtonFragment extends Fragment {
                                 case "delete":
                                     noteFolder.delete();
                                     //restart main activity
+                                    MainActivity.needToRefresh = true;
                                     startActivity(new Intent(MainActivity.mainActivityContext, MainActivity.class));
                                     break;
                                 case "run as script":
@@ -180,17 +177,20 @@ public class ItemButtonFragment extends Fragment {
                                     EncryptFragment encryptFragment = new EncryptFragment();
                                     encryptFragment.addNoteFolderToBeEncrypted(noteFolder);
                                     encryptFragment.show(getFragmentManager(), "tag");
+                                    MainActivity.needToRefresh = true;
                                     break;
                                 case "decrypt":
                                     DecryptFragment decryptFragment = new DecryptFragment();
                                     decryptFragment.addNoteFolderToBeDecrypted(noteFolder);
                                     decryptFragment.show(getFragmentManager(), "tag");
+                                    MainActivity.needToRefresh = true;
                                     break;
                                 case "select":
                                     //activate all checkboxes
                                     MainActivity.mainActivity.displayCheckBoxes();
                                     //make this item's checkbox selected
                                     checkBox.setChecked(true);
+
                                     break;
                                 case "unselect all":
                                     //deactivate all checkboxes
@@ -200,11 +200,13 @@ public class ItemButtonFragment extends Fragment {
                                     //if more than one item is selected, delete them all
                                     MainActivity.mainActivity.deleteSelection();
                                     //restart main activity
+                                    MainActivity.needToRefresh = true;
                                     startActivity(new Intent(MainActivity.mainActivityContext, MainActivity.class));
                                     break;
                                 case "compact all":
                                     MainActivity.mainActivity.compactSelection();
                                     //restart main activity
+                                    MainActivity.needToRefresh = true;
                                     startActivity(new Intent(MainActivity.mainActivityContext, MainActivity.class));
                                     break;
                                 case "run all":
@@ -249,6 +251,7 @@ public class ItemButtonFragment extends Fragment {
                                     AddToColletionFragment addToCollectionFragment = new AddToColletionFragment();
                                     addToCollectionFragment.addToNoteFoldersToBeAddedToCollection(noteFolder);
                                     addToCollectionFragment.show(getFragmentManager(), "show collections to add an item");
+                                    MainActivity.needToRefresh = true;
                                     break;
                                 case "add all to collection":
                                     AddToColletionFragment addToCollectionFrag = new AddToColletionFragment();
@@ -256,16 +259,19 @@ public class ItemButtonFragment extends Fragment {
                                         addToCollectionFrag.addToNoteFoldersToBeAddedToCollection(noteItem.noteFolder);
                                     }
                                     addToCollectionFrag.show(getFragmentManager(), "show collections to add more than one item");
+                                    MainActivity.needToRefresh = true;
                                     break;
                                 case "remove from collection":
                                     noteFolder.removeFromCollection(MainActivity.currentlyDisplayedCollection.getName());
                                     MainActivity.mainActivity.removeAllAndAddSelection(MainActivity.currentlyDisplayedCollection.getLinkedNoteFolders());
+                                    MainActivity.needToRefresh = true;
                                     break;
                                 case "remove all from collection":
                                     for(ItemButtonFragment token : MainActivity.mainActivity.getSelection()){
                                         token.noteFolder.removeFromCollection(MainActivity.currentlyDisplayedCollection.getName());
                                     }
                                     MainActivity.mainActivity.removeAllAndAddSelection(MainActivity.currentlyDisplayedCollection.getLinkedNoteFolders());
+                                    MainActivity.needToRefresh = true;
                                     break;
                                 case "encrypt all":
                                     EncryptFragment encrFrag = new EncryptFragment();
@@ -274,6 +280,7 @@ public class ItemButtonFragment extends Fragment {
                                     }
                                     encrFrag.show(getFragmentManager(), "tag");
                                     encrFrag.deactivateOTP(); //no OTP option for multiple note folders
+                                    MainActivity.needToRefresh = true;
                                     break;
                                 case "decrypt all":
                                     DecryptFragment decrFrag = new DecryptFragment();
@@ -281,6 +288,7 @@ public class ItemButtonFragment extends Fragment {
                                         decrFrag.addNoteFolderToBeDecrypted(itemm.noteFolder);
                                     }
                                     decrFrag.show(getFragmentManager(), "tag");
+                                    MainActivity.needToRefresh = true;
                                     break;
                                 case "share":
                                     Share.shareText(noteFolder.getNotesText());

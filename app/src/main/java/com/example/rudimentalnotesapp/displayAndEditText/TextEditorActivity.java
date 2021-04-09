@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -38,6 +40,7 @@ public class TextEditorActivity extends AppCompatActivity {
     //text size
     static int textSize =18;
 
+
     //eigenreference
     public static TextEditorActivity textEditorActivity;
 
@@ -45,13 +48,16 @@ public class TextEditorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_editor);
+
+        //get eigenreference
+        textEditorActivity = this;
+
         //get text area
         textArea = findViewById(R.id.textArea);
 
         //get text size from global settings and set it
         textSize = Settings.getTextSize();
         textArea.setTextSize(textSize);
-
 
         //get background color from settings and set it
         int bgColor = Settings.getBackgroundForegroundColor(0);
@@ -66,22 +72,51 @@ public class TextEditorActivity extends AppCompatActivity {
         //get intent from caller
         intent = getIntent();
 
-        //get note folder ID, and thus note folder
-        int noteFolderID = intent.getIntExtra("NOTE_FOLDER_ID", -1);
-        noteFolder = NoteFolderManager.getNoteFolder(noteFolderID);
 
-        //get text to be displayed from note folder that has been opened
+
+
+        //in case a note folder was passed
         try{
+            //get note folder ID, and thus note folder
+            int noteFolderID = intent.getIntExtra("NOTE_FOLDER_ID", -1);
+            noteFolder = NoteFolderManager.getNoteFolder(noteFolderID);
+            //get text to be displayed from note folder that has been opened
             textToBeDisplayed = noteFolder.getNotesText();
-        }catch (NullPointerException e){
-            textToBeDisplayed = intent.getStringExtra("TEXT_TO_BE_DISPLAYED");
+            //display initial text from note folder
+            textArea.setText(textToBeDisplayed);
+            return;
+        }catch (Exception e){
+
         }
 
-        //display initial text from note folder
-        textArea.setText(textToBeDisplayed);
 
-        //get eigenreference
-        textEditorActivity = this;
+
+
+        //if the text to be displayed comes from without the app:
+        //(selection of text and menu button press)
+        try{
+            String text = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT).toString();
+            textToBeDisplayed = text;
+            NoteFolder newNoteFolder = NoteFolderManager.createNoteFolder();
+            newNoteFolder.setNotesText(textToBeDisplayed);
+            noteFolder = newNoteFolder;
+            //display initial text from note folder
+            textArea.setText(textToBeDisplayed);
+            return;
+        }catch (Exception e){
+
+        }
+
+
+        //try getting the text to be displayed if no notefolder was passed
+        try{
+            textToBeDisplayed = intent.getStringExtra("TEXT_TO_BE_DISPLAYED");
+            //display initial text from note folder
+            textArea.setText(textToBeDisplayed);
+            return;
+        }catch (Exception e){
+
+        }
 
 
     }
@@ -110,6 +145,7 @@ public class TextEditorActivity extends AppCompatActivity {
                 noteFolder.addMeToRelevantCollections();
             }
 
+            MainActivity.needToRefresh = true;
             Toast.makeText(MainActivity.mainActivityContext, "saved" , Toast.LENGTH_SHORT).show();
         }else{
             //else tell user that no change was made
@@ -117,6 +153,7 @@ public class TextEditorActivity extends AppCompatActivity {
         }
 
     }
+
 
 
 
@@ -130,10 +167,16 @@ public class TextEditorActivity extends AppCompatActivity {
             case 25: //volume down pressed: forth
                 SimulateKeyPress.press(KeyEvent.KEYCODE_DPAD_RIGHT);
                 return true;
-
         }
         return super.onKeyDown(keyCode, event);
     }
+
+
+
+
+
+
+
 
 
 }

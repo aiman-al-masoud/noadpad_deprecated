@@ -20,6 +20,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.rudimentalnotesapp.R;
 import com.example.rudimentalnotesapp.collections.Collection;
+import com.example.rudimentalnotesapp.mainNotesList.MainActivity;
 import com.example.rudimentalnotesapp.settings.Settings;
 
 import java.time.LocalDateTime;
@@ -101,6 +102,10 @@ public class TextSettingsDialogFragment extends DialogFragment {
 
                 //reset colors of settings activity soon after the change
                 SettingsActivity.settingsActivity.resetColors();
+
+                //tell main activity it needs to change
+                MainActivity.needToRefresh = true;
+
 
             }
             @Override

@@ -1,35 +1,30 @@
 package com.example.rudimentalnotesapp.mainNotesList;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
-
-
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.format.Time;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.rudimentalnotesapp.R;
-import com.example.rudimentalnotesapp.displayAndEditText.TextEditorActivity;
-import com.example.rudimentalnotesapp.search.SearchDialogFragment;
 import com.example.rudimentalnotesapp.collections.Collection;
 import com.example.rudimentalnotesapp.collections.CreateCollectionFragment;
 import com.example.rudimentalnotesapp.collections.OpenCollectionFragment;
+import com.example.rudimentalnotesapp.displayAndEditText.TextEditorActivity;
 import com.example.rudimentalnotesapp.downloads.DownloadWebpageFragment;
 import com.example.rudimentalnotesapp.filesystem.NoteFolder;
 import com.example.rudimentalnotesapp.filesystem.NoteFolderManager;
+import com.example.rudimentalnotesapp.search.SearchDialogFragment;
 import com.example.rudimentalnotesapp.settings.Settings;
 import com.example.rudimentalnotesapp.settings.SettingsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -61,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     public static Collection currentlyDisplayedCollection;
 
     //TODO: refresh tag: tells the main activity it has to refresh its list
+    public static boolean needToRefresh;
 
 
     @Override
@@ -209,6 +205,12 @@ public class MainActivity extends AppCompatActivity {
         //if it doesn't exist yet
         Settings.createSettingsFolder();
 
+
+        //re-add ALL items once
+        refreshAndReaddAll();
+        //reset to no collection displayed
+        setCurrentlyDisplayedCollection(null);
+
     }
 
 
@@ -216,6 +218,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
+
+        Log.d("NEED_TO_REFRESH", needToRefresh+"");
+        if(!needToRefresh){
+            return;
+        }
+        MainActivity.needToRefresh = false;
+
 
         //if the currently displayed collection
         //(permanent or temporary) is not null,
@@ -240,10 +249,13 @@ public class MainActivity extends AppCompatActivity {
         //super.onBackPressed();
     }
 
+
+
+
+
     //add an item to the currentItemsList and stick it to the
     //activity visually
     public void addItemToCurrentItemList(NoteFolder itemsNoteFolder){
-
         //make a new visual item
         ItemButtonFragment newItem = new ItemButtonFragment();
         //set its referenced file
@@ -265,6 +277,8 @@ public class MainActivity extends AppCompatActivity {
         //clear list
         currentItemsList.clear();
     }
+
+
 
     //add all files in the app's local dir
     public void addAll(){
@@ -289,8 +303,6 @@ public class MainActivity extends AppCompatActivity {
             addItemToCurrentItemList(noteFolder);
         }
     }
-
-
 
 
     //turn on check-box selection for all items
@@ -328,13 +340,12 @@ public class MainActivity extends AppCompatActivity {
 
     //compact selection in one single new big notes folder,
     //then delete old smaller note folders
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void compactSelection(){
+        public void compactSelection(){
         //get all of the notes from all of the
         //selected folders in one buffer
         String buf = "";
         for(ItemButtonFragment item : getSelection()){
-            buf+="//"+item.getNoteFolder().getDateLastModified().toString()+"\n"+item.getNoteFolder().getNotesText()+"\n\n";
+            buf+="//"+item.getNoteFolder().getDateLastModifiedString()+"\n"+item.getNoteFolder().getNotesText()+"\n\n";
         }
         //create new compacted notes folder and fill it up
         NoteFolder noteFolder = NoteFolderManager.createNoteFolder();
@@ -358,6 +369,8 @@ public class MainActivity extends AppCompatActivity {
     public void setNotesListTitle(String title){
         ((TextView)findViewById(R.id.notesListTitle)).setText(title);
     }
+
+
 
 
 

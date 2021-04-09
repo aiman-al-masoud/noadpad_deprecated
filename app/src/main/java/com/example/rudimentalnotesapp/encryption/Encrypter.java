@@ -7,6 +7,9 @@ import androidx.annotation.RequiresApi;
 import java.util.Random;
 
 public class Encrypter {
+    public char[] getLettersArray() {
+        return lettersArray;
+    }
 
     //this table is basically a 26*26 letters matrix
     private char[][] tabulaRecta;
