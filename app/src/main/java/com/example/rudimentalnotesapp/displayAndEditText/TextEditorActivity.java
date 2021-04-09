@@ -146,17 +146,17 @@ public class TextEditorActivity extends AppCompatActivity {
             }
 
             MainActivity.needToRefresh = true;
-            Toast.makeText(MainActivity.mainActivityContext, "saved" , Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.mainActivity, "saved" , Toast.LENGTH_SHORT).show();
         }else{
             //else tell user that no change was made
-            Toast.makeText(MainActivity.mainActivityContext, "no changes were made" , Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.mainActivity, "no changes were made" , Toast.LENGTH_SHORT).show();
         }
 
     }
 
 
 
-
+    ////////////////////////EXPERIMENTAL TEXT NAVIGATION WITH VOLUME KEYS///////////////////////
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

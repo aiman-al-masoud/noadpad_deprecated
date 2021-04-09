@@ -47,8 +47,10 @@ public class SearchDialogFragment extends DialogFragment {
 
             @Override
             public void onClick(View v) {
+                //create a list to store the query results (note folders) in
                 ArrayList<NoteFolder> relevantNoteFolders = new ArrayList<NoteFolder>();
 
+                //get the keywords from the search-bar (separated by whitespace)
                 String[] keywords = searchBar.getText().toString().split("\\s+");
 
 

@@ -12,7 +12,7 @@ import java.util.Comparator;
 public class NoteFolderManager {
 
     //the path to the directory all of the note folders are stored in
-    static String rootPath = MainActivity.rootDir.getPath();
+    static String rootPath = FileIO.getRootDir().getPath();
 
     //the list of all currently existing note folders
     static ArrayList<NoteFolder> currentNoteFoldersList = new ArrayList<NoteFolder>();

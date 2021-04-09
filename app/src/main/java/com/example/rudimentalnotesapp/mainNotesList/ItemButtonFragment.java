@@ -111,7 +111,7 @@ public class ItemButtonFragment extends Fragment {
                 @Override
                 public boolean onLongClick(View v) {
 
-                    popupMenu = new PopupMenu(MainActivity.mainActivityContext, button);
+                    popupMenu = new PopupMenu(MainActivity.mainActivity, button);
                     popupMenu.getMenuInflater().inflate(R.menu.menu_item_popup, popupMenu.getMenu());
 
                     //set title of encrypt/decrypt button depending
@@ -154,7 +154,7 @@ public class ItemButtonFragment extends Fragment {
                                     noteFolder.delete();
                                     //restart main activity
                                     MainActivity.needToRefresh = true;
-                                    startActivity(new Intent(MainActivity.mainActivityContext, MainActivity.class));
+                                    startActivity(new Intent(MainActivity.mainActivity, MainActivity.class));
                                     break;
                                 case "run as script":
 
@@ -164,7 +164,7 @@ public class ItemButtonFragment extends Fragment {
                                         Object result = interpreter.eval(script);
 
                                         //switch to displaying results of execution on the text editor
-                                        Intent intent = new Intent(MainActivity.mainActivityContext, TextEditorActivity.class);
+                                        Intent intent = new Intent(MainActivity.mainActivity, TextEditorActivity.class);
                                         intent.putExtra("TEXT_TO_BE_DISPLAYED", result.toString());
                                         startActivity(intent);
 
@@ -201,13 +201,13 @@ public class ItemButtonFragment extends Fragment {
                                     MainActivity.mainActivity.deleteSelection();
                                     //restart main activity
                                     MainActivity.needToRefresh = true;
-                                    startActivity(new Intent(MainActivity.mainActivityContext, MainActivity.class));
+                                    startActivity(new Intent(MainActivity.mainActivity, MainActivity.class));
                                     break;
                                 case "compact all":
                                     MainActivity.mainActivity.compactSelection();
                                     //restart main activity
                                     MainActivity.needToRefresh = true;
-                                    startActivity(new Intent(MainActivity.mainActivityContext, MainActivity.class));
+                                    startActivity(new Intent(MainActivity.mainActivity, MainActivity.class));
                                     break;
                                 case "run all":
                                     //initialize interpreter
@@ -216,6 +216,7 @@ public class ItemButtonFragment extends Fragment {
                                     //Interpreter executes the code strictly line-by-line,
                                     //so you gotta make sure that function definitions
                                     //go first, and function calls last.
+
 
                                     String functionDefsBuffer="";
                                     String functionCallsBuffer = "";
@@ -239,7 +240,7 @@ public class ItemButtonFragment extends Fragment {
                                     try{
                                         Object result = interpreter.eval(scriptBuffer);
                                         //switch to displaying results of execution on the text editor
-                                        Intent intent = new Intent(MainActivity.mainActivityContext, TextEditorActivity.class);
+                                        Intent intent = new Intent(MainActivity.mainActivity, TextEditorActivity.class);
                                         intent.putExtra("TEXT_TO_BE_DISPLAYED", result.toString());
                                         startActivity(intent);
                                     }catch (EvalError e){
@@ -323,15 +324,24 @@ public class ItemButtonFragment extends Fragment {
         int bgColor = Settings.getBackgroundForegroundColor(0);
         int fgColor = Settings.getBackgroundForegroundColor(1);
         view.getRootView().setBackgroundColor(bgColor);
-        datesText.setTextColor(fgColor);
-        button.setTextColor(fgColor);
+
+        try{
+            datesText.setTextColor(fgColor);
+            button.setTextColor(fgColor);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+            Log.d("NULL_OBJ", datesText+"");
+        }
+
 
         return view;
     }
 
+    //////////////////////////////////////////////////
+
     //get file's text and call the TextEditor Activity
     public void callTextEditor(){
-        Intent intent = new Intent(MainActivity.mainActivityContext, TextEditorActivity.class);
+        Intent intent = new Intent(MainActivity.mainActivity, TextEditorActivity.class);
         //give text editor an ID of a note folder
         intent.putExtra("NOTE_FOLDER_ID", noteFolder.getID());
         startActivity(intent);

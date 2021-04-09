@@ -55,7 +55,7 @@ public class DownloaderTask extends AsyncTask {
 
         if(launchTextEditorAfterDownload){
             //launch Text Editor activity
-            Intent intent = new Intent(MainActivity.mainActivityContext, TextEditorActivity.class);
+            Intent intent = new Intent(MainActivity.mainActivity, TextEditorActivity.class);
             intent.putExtra("NOTE_FOLDER_ID", noteFolder.getID());
             MainActivity.mainActivity.startActivity(intent);
         }

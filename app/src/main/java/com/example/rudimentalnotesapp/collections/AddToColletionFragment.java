@@ -29,7 +29,7 @@ public class AddToColletionFragment extends DialogFragment {
 
         //load all collection as buttons
         for(String collectionName : Collection.getCollectionNames()){
-            Button button = new Button(MainActivity.mainActivityContext);
+            Button button = new Button(MainActivity.mainActivity);
 
             //set button's name to collection name
             button.setText(collectionName);

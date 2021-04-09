@@ -25,7 +25,7 @@ public class Collection {
     private ArrayList<String> tagsList;
 
     //a reference to the global folder containing info about all saved collections
-    static File globalCollectionsFolder = new File(MainActivity.rootDir.getPath()+"/collections");
+    static File globalCollectionsFolder = new File(FileIO.getRootDir().getPath()+"/collections");
 
     //a reference to this Collection's file inside of the global collections directory
     File savedInfoFile;

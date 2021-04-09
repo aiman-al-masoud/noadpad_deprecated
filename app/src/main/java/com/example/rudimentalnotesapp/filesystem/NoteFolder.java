@@ -99,9 +99,11 @@ public class NoteFolder extends File {
     //internal structure remains flat!!
     @Override
     public boolean delete() {
+        removeFromAllCollections();
         for(File file : listFiles()){
             file.delete();
         }
+
         return super.delete();
     }
 
@@ -258,6 +260,16 @@ public class NoteFolder extends File {
         //re-save collections to storage
         saveCollectionNames();
     }
+
+
+    //remove this note folder from all collections it is in
+    public void removeFromAllCollections(){
+        for(int i =0; i < collectionNamesList.size(); i++){
+            removeFromCollection(collectionNamesList.get(i));
+        }
+    }
+
+
 
 
 

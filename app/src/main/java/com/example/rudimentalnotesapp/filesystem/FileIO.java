@@ -12,6 +12,9 @@ import java.util.ArrayList;
 
 public class FileIO {
 
+    //root directory of this app's files
+    static File rootDir = MainActivity.rootDir;
+
     //overwrite contents of file with a String
     public static void writeToFile(File file, String text){
         try{
@@ -66,7 +69,7 @@ public class FileIO {
 
     //create file
     public static  File createNewFile(String name){
-        File newFile = new File(MainActivity.rootDir.getPath()+"/"+name+".txt");
+        File newFile = new File(rootDir+"/"+name+".txt");
         try {
             if(!newFile.exists()){
                 newFile.createNewFile();
@@ -81,7 +84,7 @@ public class FileIO {
 
     //get all of the files stored on app's filesystem.
     public static  File[] getMyFiles(){
-        return MainActivity.rootDir.listFiles();
+        return rootDir.listFiles();
     }
 
     //get JUST my note fileslistFiles()
@@ -115,6 +118,10 @@ public class FileIO {
     }
 
 
+    //get root directory
+    public static File getRootDir(){
+        return rootDir;
+    }
 
 
 

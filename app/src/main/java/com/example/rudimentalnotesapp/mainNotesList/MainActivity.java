@@ -1,9 +1,7 @@
 package com.example.rudimentalnotesapp.mainNotesList;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -34,9 +32,6 @@ public class MainActivity extends AppCompatActivity {
     // (excluding final slash)
     public static File rootDir;
 
-    //get this casted to Context
-    public static Context mainActivityContext;
-
     //get this activity
     public static MainActivity mainActivity;
 
@@ -55,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     //current collection on display
     public static Collection currentlyDisplayedCollection;
 
-    //TODO: refresh tag: tells the main activity it has to refresh its list
+    //refresh tag: tells the main activity it has to refresh its list
     public static boolean needToRefresh;
 
 
@@ -67,11 +62,11 @@ public class MainActivity extends AppCompatActivity {
         //get path to root of app's local filesystem
         rootDir = getFilesDir();
 
-        //get this acttivity
+        //get this activity
         mainActivity = this;
 
-        //get this casted to Context
-        mainActivityContext = this;
+        //if it doesn't exist yet
+        Settings.createSettingsFolder();
 
         //get new-folder FAB and set its action
         newFileButton = findViewById(R.id.createNewFileFAB);
@@ -81,16 +76,15 @@ public class MainActivity extends AppCompatActivity {
 
                 //create a new note folder
                 NoteFolder newNoteFolder = NoteFolderManager.createNoteFolder();
-                Intent intent = new Intent(MainActivity.mainActivityContext, TextEditorActivity.class);
+                Intent intent = new Intent(MainActivity.mainActivity, TextEditorActivity.class);
                 intent.putExtra("NOTE_FOLDER_ID", newNoteFolder.getID());
 
-                //if a collection is currently on display, add newly created folder to it
+                //if a collection is currently on display, add the newly created folder to it
                 if(currentlyDisplayedCollection!=null){
                     newNoteFolder.addToCollection(currentlyDisplayedCollection.getName());
-                    //refresh the list since a new item got added to the collection
-                    mainActivity.removeAllAndAddSelection(currentlyDisplayedCollection.getLinkedNoteFolders());
                 }
 
+                //start the text editor activity
                 startActivity(intent);
 
             }
@@ -101,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) {
 
-                PopupMenu longPressMenu = new PopupMenu(MainActivity.mainActivityContext, newFileButton);
+                PopupMenu longPressMenu = new PopupMenu(MainActivity.mainActivity, newFileButton);
                 longPressMenu.getMenuInflater().inflate(R.menu.new_folder_long_press_menu, longPressMenu.getMenu());
 
                 //set long press menu's actions
@@ -129,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                //launch a new search dialog fragment
                 new SearchDialogFragment().show(getSupportFragmentManager(), "SeachDialogFragment");
 
             }
@@ -139,15 +134,17 @@ public class MainActivity extends AppCompatActivity {
         settingsButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(MainActivity.mainActivityContext, settingsButton);
+                PopupMenu popupMenu = new PopupMenu(MainActivity.mainActivity, settingsButton);
                 popupMenu.getMenuInflater().inflate(R.menu.options_popup_menu, popupMenu.getMenu());
 
                 //set listener
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        //if the 'settings' menu item gets pressed...
                         if(item.getItemId() == R.id.settingsMenuItem){
-                            Intent intent = new Intent(MainActivity.mainActivityContext, SettingsActivity.class);
+                            //launch the settings activity
+                            Intent intent = new Intent(MainActivity.mainActivity, SettingsActivity.class);
                             startActivity(intent);
                         }
                         return true;
@@ -166,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 //inflate collections manager menu
-                PopupMenu collectionsPopupMenu = new PopupMenu(MainActivity.mainActivityContext, collectionFAB);
+                PopupMenu collectionsPopupMenu = new PopupMenu(MainActivity.mainActivity, collectionFAB);
                 collectionsPopupMenu.getMenuInflater().inflate(R.menu.collections_manager_menu, collectionsPopupMenu.getMenu());
 
                 //set collections manager menu's actions
@@ -201,11 +198,7 @@ public class MainActivity extends AppCompatActivity {
         //set this activity's background color according to global settings
         this.getWindow().getDecorView().setBackgroundColor(Settings.getBackgroundForegroundColor(0));
 
-
-        //if it doesn't exist yet
-        Settings.createSettingsFolder();
-
-
+        //ADD ALLLL ITEMS AT STARTUP (NO COLLECTION)
         //re-add ALL items once
         refreshAndReaddAll();
         //reset to no collection displayed
@@ -213,43 +206,53 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    //reload available files
+    //ON POST RESUME
     @Override
     protected void onPostResume() {
         super.onPostResume();
 
-        Log.d("NEED_TO_REFRESH", needToRefresh+"");
+        //if there's no need to refresh, leave
+        //list as is
         if(!needToRefresh){
             return;
         }
+
+        //if there is a need to refresh, and the
+        // currently displayed collection is not null,
+        //then remove all and add the items from
+        //the collection again.
+        if(currentlyDisplayedCollection!=null){
+            //refresh the list since a new item got added to the collection
+            mainActivity.removeAllAndAddSelection(currentlyDisplayedCollection.getLinkedNoteFolders());
+            return;
+        }
+
+        //reset the need-to-refresh tag to false.
         MainActivity.needToRefresh = false;
 
 
-        //if the currently displayed collection
-        //(permanent or temporary) is not null,
-        //then do not reload list items.
-        if(currentlyDisplayedCollection!=null){
-           return;
-        }
-
+        //IF NO COLLECTION WAS THE CURRENT COLLECTION:
         //re-add ALL items once
         refreshAndReaddAll();
         //reset to no collection displayed
         setCurrentlyDisplayedCollection(null);
-
     }
 
     @Override
     public void onBackPressed() {
+        //avoiding useless refreshes
+        if(currentlyDisplayedCollection==null){
+            return;
+        }
+        //if the back button was pressed
+        //go back to displaying all of the
+        //note items (no collection)
         //re-add ALL items once
         refreshAndReaddAll();
         //reset to no collection displayed
         setCurrentlyDisplayedCollection(null);
         //super.onBackPressed();
     }
-
-
 
 
 
@@ -277,7 +280,6 @@ public class MainActivity extends AppCompatActivity {
         //clear list
         currentItemsList.clear();
     }
-
 
 
     //add all files in the app's local dir

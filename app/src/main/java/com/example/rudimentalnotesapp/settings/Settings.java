@@ -12,7 +12,7 @@ import java.io.IOException;
 public class Settings {
 
     //references to (maybe not yet extant) files
-    public static File settingsFolder = new File(MainActivity.rootDir.getPath()+"/settings");
+    public static File settingsFolder = new File(FileIO.getRootDir().getPath()+"/settings");
     public static File textSizeFile = new File(settingsFolder.getPath()+"/textSize.txt");
     public static File backgroundAndForegroundColorFile = new File(settingsFolder.getPath()+"/backgroundAndForegroundColor.txt"); //background on line one. foreground on line two.
     public static File currentColorThemeFile =  new File(settingsFolder.getPath()+"/currentColorTheme.txt"); //it's an integer ID 0:default, 1:dark ...
@@ -156,11 +156,17 @@ public class Settings {
 
     //are set self sorting collections on?
     public static boolean isSelfSortingCollectionsOn(){
-        if(FileIO.readFile(selfSortingCollectionsFlagFile).contains("true")){
-            return true;
-        }else{
-            return false;
+        try{
+            if(FileIO.readFile(selfSortingCollectionsFlagFile).contains("true")){
+                return true;
+            }else{
+                return false;
+            }
+        }catch (Exception e){
+
         }
+
+       return false;
     }
 
 

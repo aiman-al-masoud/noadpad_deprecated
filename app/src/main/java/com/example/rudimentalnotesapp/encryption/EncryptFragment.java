@@ -58,7 +58,7 @@ public class EncryptFragment extends DialogFragment {
 
                 toBeEncryptedFoldersList.clear();
                 eigenReference.dismiss();
-                startActivity(new Intent(MainActivity.mainActivityContext, MainActivity.class));
+                startActivity(new Intent(MainActivity.mainActivity, MainActivity.class));
             }
         });
 

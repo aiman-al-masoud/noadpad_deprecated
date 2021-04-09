@@ -33,7 +33,7 @@ public class OpenCollectionFragment extends DialogFragment {
 
         //load all collection as buttons
         for(String collectionName : Collection.getCollectionNames()){
-            Button button = new Button(MainActivity.mainActivityContext);
+            Button button = new Button(MainActivity.mainActivity);
             //set the button's name to the collection's
             button.setText(collectionName);
 
@@ -60,7 +60,7 @@ public class OpenCollectionFragment extends DialogFragment {
                 public boolean onLongClick(View v) {
 
                     //inflate collections long press menu
-                    PopupMenu popupMenu = new PopupMenu(MainActivity.mainActivityContext, button);
+                    PopupMenu popupMenu = new PopupMenu(MainActivity.mainActivity, button);
                     popupMenu.getMenuInflater().inflate(R.menu.long_press_collection_menu, popupMenu.getMenu());
 
                     //set collections long press menu's actions

@@ -51,7 +51,7 @@ public class DecryptFragment extends DialogFragment {
                 }
 
                 eigenReference.dismiss();
-                startActivity(new Intent(MainActivity.mainActivityContext, MainActivity.class));
+                startActivity(new Intent(MainActivity.mainActivity, MainActivity.class));
             }
         });
 
