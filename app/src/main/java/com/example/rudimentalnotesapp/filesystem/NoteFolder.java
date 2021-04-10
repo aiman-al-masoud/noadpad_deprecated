@@ -31,6 +31,9 @@ public class NoteFolder extends File {
     //list of the collections names.
     ArrayList<String> collectionNamesList;
 
+    //this is also gonna be part of the ID of a note folder
+    long unixCreationTime;
+
     //encrypter
     private static Encrypter encrypter = new Encrypter();
 
@@ -39,11 +42,13 @@ public class NoteFolder extends File {
     public NoteFolder(@NonNull String pathname) {
         super(pathname);
 
+        //get the time of creation/ID
+        unixCreationTime = Long.parseLong(this.getName().replace("noteFolder", "").trim());
+
         //declare this noteFolder's internal files
         notesTextFile = new File(pathname+"/notesTextFile.txt");
         encryptedFlagFile = new File(pathname+"/encryptedFlagFile.txt");
         linkedToCollectionsFile = new File(pathname+"/linkedToCollections.txt");
-
 
 
         //if this folder exists, yet some of its
@@ -88,9 +93,10 @@ public class NoteFolder extends File {
     }
 
 
-    //get integer ID
-    public int getID(){
-        return Integer.parseInt(getName().replace("noteFolder", "").trim());
+    //get integer ID, which is also the time of creation
+    //in unix time
+    public long getID(){
+        return unixCreationTime;
     }
 
 
@@ -108,6 +114,9 @@ public class NoteFolder extends File {
     }
 
 
+
+
+    //HANDLING KEYWORD-SEARCH:
 
     //does note file contain a given keyword
     public boolean searchForKeywordInNotesText(String keyword){
@@ -151,33 +160,87 @@ public class NoteFolder extends File {
         return false;
     }
 
+    //get positions (charnum) of a given token (keyword)
+    public ArrayList<Integer> getPositionsOf(String token){
+        ArrayList<Integer> positions = new ArrayList<Integer>();
+        String text = getNotesText();
+        while(text.toUpperCase().contains(token.toUpperCase())){
+            int nextPos = text.toUpperCase().indexOf(token.toUpperCase());
+            positions.add(nextPos);
+            text = text.toUpperCase().replaceFirst(token.toUpperCase(), Encrypter.generateRandomKey(token.length()));
+        }
+
+        return positions;
+    }
 
 
+
+    //HANDLING DATES
 
     //get date last modified (of notes file)
     public Date getDateLastModified(){
         try {
-            //TEST
-            //Log.d("DATE_TEST",new SimpleDateFormat("dd/MM/yyyy").format(new Date(notesTextFile.lastModified())));
             Date dateLastModified = new Date(notesTextFile.lastModified());
-            Log.d("DATES_TEST",dateLastModified.toString());
             return dateLastModified;
-            //BasicFileAttributes fileAttributes = Files.readAttributes(notesTextFile.toPath(), BasicFileAttributes.class);
-            //return fileAttributes.lastModifiedTime();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-
-    //get date last modfied string
+    //get date last modfied string (date + time)
     public String getDateLastModifiedString(){
-        return new SimpleDateFormat("dd/MM/yyyy hh:mm").format( getDateLastModified());
+        return getDateLastModifiedStringWithoutTime()+" "+getTimeLastModifiedString();
+    }
+
+    //get date last modified string without time
+    public String getDateLastModifiedStringWithoutTime(){
+        return new SimpleDateFormat("dd/MM/yyyy").format( getDateLastModified());
+    }
+
+    //get time last modified
+    public String getTimeLastModifiedString(){
+        return new SimpleDateFormat("hh:mm").format( getDateLastModified());
+    }
+
+
+    //get date created
+    public Date getDateCreated(){
+        try {
+            Date dateLastModified = new Date(unixCreationTime);
+            return dateLastModified;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //get day last modified
+    public int getDayLastModified(){
+        return getDateLastModified().getDay();
+    }
+
+    //get week last modified
+    public int getWeekLastModified(){
+        //NB: int division
+        return getDayLastModified()/7;
+    }
+
+    //get month last modified
+    public int getMonthLastModified(){
+        return getDateLastModified().getMonth();
+    }
+
+    //get year last modified
+    public int getYearLastModified(){
+        return getDateLastModified().getYear();
     }
 
 
 
+
+
+    //HANDLING UPDATES
     // If this folder exists, yet some of its
     // internal folders don't, create them.
     //Useful for when the app gets updated
@@ -203,6 +266,7 @@ public class NoteFolder extends File {
             }
         }
     }
+
 
 
 
@@ -278,8 +342,6 @@ public class NoteFolder extends File {
 
 
 
-
-
     //check if this folder contains any of the keywords
     //from any collection, and add it in case it does.
     public void addMeToRelevantCollections(){
@@ -298,7 +360,7 @@ public class NoteFolder extends File {
 
 
 
-    //ENCRYPTION AND DECRYPTION:
+    //HANDLING ENCRYPTION AND DECRYPTION:
 
     //sets the state of this folder as "encrypted"
     private void setEncrypted(boolean encrypted) {

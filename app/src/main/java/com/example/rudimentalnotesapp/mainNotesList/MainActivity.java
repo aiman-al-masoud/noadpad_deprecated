@@ -2,6 +2,7 @@ package com.example.rudimentalnotesapp.mainNotesList;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -24,6 +25,7 @@ import com.example.rudimentalnotesapp.settings.SettingsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -70,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
         Settings.createSettingsFolder();
 
 
+        //TODO: REMOVE DEBUG "LOG-PRINTOUT"
+        FileIO.printRootDirList();
 
 
         //get new-folder FAB and set its action
@@ -244,8 +248,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //avoiding useless refreshes
+        //hide checkboxes
         if(currentlyDisplayedCollection==null){
+            hideCheckBoxes();
             return;
         }
         //if the back button was pressed
@@ -344,22 +349,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //select all: checks all of the boxes
+    public void selectAll(){
+        for(ItemButtonFragment item : currentItemsList){
+            item.setCheckedBox(true);
+        }
+    }
+
+
     //compact selection in one single new big notes folder,
     //then delete old smaller note folders
         public void compactSelection(){
-        //get all of the notes from all of the
-        //selected folders in one buffer
-        String buf = "";
-        for(ItemButtonFragment item : getSelection()){
-            buf+="//"+item.getNoteFolder().getDateLastModifiedString()+"\n"+item.getNoteFolder().getNotesText()+"\n\n";
-        }
-        //create new compacted notes folder and fill it up
-        NoteFolder noteFolder = NoteFolderManager.createNoteFolder();
-        noteFolder.setNotesText(buf);
 
-        //and now delete selection
-        deleteSelection();
+        //get the note folders to be compacted
+        ArrayList<NoteFolder> noteFoldersSelected = new ArrayList<NoteFolder>();
+        for(ItemButtonFragment item : getSelection()){
+             noteFoldersSelected.add(item.getNoteFolder());
+        }
+
+        //call NoteFolderManager to compact them
+        NoteFolderManager.compactNoteFolders(noteFoldersSelected);
+
     }
+
 
     //set currently displayed collection
     public void setCurrentlyDisplayedCollection(Collection currentlyDisplayedCollection){

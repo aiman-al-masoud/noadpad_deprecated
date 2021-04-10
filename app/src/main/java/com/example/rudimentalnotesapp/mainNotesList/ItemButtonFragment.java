@@ -15,6 +15,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import android.widget.PopupMenu.OnMenuItemClickListener;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -126,12 +127,13 @@ public class ItemButtonFragment extends Fragment {
                     //the multiple-item version of the popup menu
                     if(checkBox.getVisibility()==View.VISIBLE){
                         popupMenu.getMenu().findItem(R.id.selectItemsOption).setTitle("unselect all");
-                        popupMenu.getMenu().findItem(R.id.deleteFileItem).setTitle("delete all");
+                        popupMenu.getMenu().findItem(R.id.deleteFileItem).setTitle("delete selection");
                         popupMenu.getMenu().findItem(R.id.compactItem).setVisible(true);
-                        popupMenu.getMenu().findItem(R.id.runAsScript).setTitle("run all");
-                        popupMenu.getMenu().findItem(R.id.addToCollectionItem).setTitle("add all to collection");
-                        popupMenu.getMenu().findItem(R.id.removeFromCollectionItem).setTitle("remove all from collection");
-                        popupMenu.getMenu().findItem(R.id.encryptDectyptItem).setTitle(popupMenu.getMenu().findItem(R.id.encryptDectyptItem).getTitle()+" all");
+                        popupMenu.getMenu().findItem(R.id.runAsScript).setTitle("run selection");
+                        popupMenu.getMenu().findItem(R.id.addToCollectionItem).setTitle("add selection to collection");
+                        popupMenu.getMenu().findItem(R.id.removeFromCollectionItem).setTitle("remove selection from collection");
+                        popupMenu.getMenu().findItem(R.id.encryptDectyptItem).setTitle(popupMenu.getMenu().findItem(R.id.encryptDectyptItem).getTitle()+" selection");
+                        popupMenu.getMenu().findItem(R.id.selectAllItem).setVisible(true);
                     }
 
                     //if a collection's being displayed, activate the collection-related menu items
@@ -197,20 +199,20 @@ public class ItemButtonFragment extends Fragment {
                                     //deactivate all checkboxes
                                     MainActivity.mainActivity.hideCheckBoxes();
                                     break;
-                                case "delete all":
+                                case "delete selection":
                                     //if more than one item is selected, delete them all
                                     MainActivity.mainActivity.deleteSelection();
                                     //restart main activity
                                     MainActivity.needToRefresh = true;
                                     startActivity(new Intent(MainActivity.mainActivity, MainActivity.class));
                                     break;
-                                case "compact all":
+                                case "compact selection":
                                     MainActivity.mainActivity.compactSelection();
                                     //restart main activity
                                     MainActivity.needToRefresh = true;
                                     startActivity(new Intent(MainActivity.mainActivity, MainActivity.class));
                                     break;
-                                case "run all":
+                                case "run selection":
                                     //initialize interpreter
                                     Interpreter interpreter = new Interpreter();
                                     //get all of the parts of the script in one string.
@@ -255,7 +257,7 @@ public class ItemButtonFragment extends Fragment {
                                     addToCollectionFragment.show(getFragmentManager(), "show collections to add an item");
                                     MainActivity.needToRefresh = true;
                                     break;
-                                case "add all to collection":
+                                case "add selection to collection":
                                     AddToColletionFragment addToCollectionFrag = new AddToColletionFragment();
                                     for(ItemButtonFragment noteItem : MainActivity.mainActivity.getSelection()){
                                         addToCollectionFrag.addToNoteFoldersToBeAddedToCollection(noteItem.noteFolder);
@@ -268,14 +270,14 @@ public class ItemButtonFragment extends Fragment {
                                     MainActivity.mainActivity.removeAllAndAddSelection(MainActivity.currentlyDisplayedCollection.getLinkedNoteFolders());
                                     MainActivity.needToRefresh = true;
                                     break;
-                                case "remove all from collection":
+                                case "remove selection from collection":
                                     for(ItemButtonFragment token : MainActivity.mainActivity.getSelection()){
                                         token.noteFolder.removeFromCollection(MainActivity.currentlyDisplayedCollection.getName());
                                     }
                                     MainActivity.mainActivity.removeAllAndAddSelection(MainActivity.currentlyDisplayedCollection.getLinkedNoteFolders());
                                     MainActivity.needToRefresh = true;
                                     break;
-                                case "encrypt all":
+                                case "encrypt selection":
                                     EncryptFragment encrFrag = new EncryptFragment();
                                     for(ItemButtonFragment itemm : MainActivity.mainActivity.getSelection()){
                                         encrFrag.addNoteFolderToBeEncrypted(itemm.noteFolder);
@@ -284,7 +286,7 @@ public class ItemButtonFragment extends Fragment {
                                     encrFrag.deactivateOTP(); //no OTP option for multiple note folders
                                     MainActivity.needToRefresh = true;
                                     break;
-                                case "decrypt all":
+                                case "decrypt selection":
                                     DecryptFragment decrFrag = new DecryptFragment();
                                     for(ItemButtonFragment itemm : MainActivity.mainActivity.getSelection()){
                                         decrFrag.addNoteFolderToBeDecrypted(itemm.noteFolder);
@@ -294,6 +296,9 @@ public class ItemButtonFragment extends Fragment {
                                     break;
                                 case "share":
                                     Share.shareText(noteFolder.getNotesText());
+                                    break;
+                                case "select all":
+                                    MainActivity.mainActivity.selectAll();
                                     break;
 
                             }

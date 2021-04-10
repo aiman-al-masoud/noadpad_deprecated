@@ -140,7 +140,7 @@ public class Encrypter {
 
 
     //generate a random key. Can be used for OTPs
-    public String generateRandomKey(int keyLength) {
+    public static String generateRandomKey(int keyLength) {
         String result = "";
         Random rand = new Random();
 

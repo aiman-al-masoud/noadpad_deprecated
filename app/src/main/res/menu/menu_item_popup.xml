@@ -19,7 +19,7 @@
         android:title="select" />
     <item
         android:id="@+id/compactItem"
-        android:title="compact all"
+        android:title="compact selection"
         android:visible="false" />
     <item
         android:id="@+id/addToCollectionItem"
@@ -31,4 +31,8 @@
     <item
         android:id="@+id/shareMenuItem"
         android:title="share" />
+    <item
+        android:id="@+id/selectAllItem"
+        android:title="select all"
+        android:visible="false" />
 </menu>

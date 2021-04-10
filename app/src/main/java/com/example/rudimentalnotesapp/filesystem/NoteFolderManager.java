@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 
 public class NoteFolderManager {
 
@@ -36,26 +37,10 @@ public class NoteFolderManager {
     //find next available name (integer ID part) for
     //new NoteFolder
     public static NoteFolder createNoteFolder(){
-        ArrayList<NoteFolder> noteFolders = getAllNoteFolders();
-        if(noteFolders.size()==0){
-            return createNoteFolder("noteFolder0");
-        }
 
-        //sort: highest ID number first index
-        Collections.sort(noteFolders, new Comparator<NoteFolder>() {
-            @Override
-            public int compare(NoteFolder o1, NoteFolder o2) {
-                return o2.getID() - o1.getID();
-            }
-        });
-
-
-        int nextID = noteFolders.get(0).getID()+1;
-        Log.d("NOTE_FOLDER_TEST", nextID+"");
-
-
-        return createNoteFolder("noteFolder"+nextID);
-
+        NoteFolder noteFolder = createNoteFolder("noteFolder"+System.currentTimeMillis());
+        Log.d("NOTE_FOLDER_UNIX", noteFolder.getName());
+        return noteFolder;
 
     }
 
@@ -71,18 +56,26 @@ public class NoteFolderManager {
         }
 
         //sort note folders by date-time last edited
-        Collections.sort(currentNoteFoldersList, new Comparator<NoteFolder>() {
+        currentNoteFoldersList = sortNoteFoldersByDateLastModified(currentNoteFoldersList);
+
+        return currentNoteFoldersList;
+    }
+
+    //sort note folders by date-time last edited
+    public static ArrayList<NoteFolder> sortNoteFoldersByDateLastModified(ArrayList<NoteFolder> noteFolders){
+        Collections.sort(noteFolders, new Comparator<NoteFolder>() {
             @Override
             public int compare(NoteFolder o1, NoteFolder o2) {
                 return o2.getDateLastModified().compareTo(o1.getDateLastModified());
             }
         });
-
-        return currentNoteFoldersList;
+        return noteFolders;
     }
 
+
+
     //get a single note folder by its ID
-    public static NoteFolder getNoteFolder(int ID){
+    public static NoteFolder getNoteFolder(long ID){
         NoteFolder noteFolder = new NoteFolder(rootPath+"/noteFolder"+ID);
         if(noteFolder.exists()){
             return noteFolder;
@@ -90,6 +83,45 @@ public class NoteFolderManager {
         return null;
     }
 
+
+
+    //compact note folders in one single new big notes folder,
+    //then delete old smaller note folders.
+    public static NoteFolder compactNoteFolders(ArrayList<NoteFolder> noteFoldersToBeCompacted){
+
+        //sort them by date last modified
+        noteFoldersToBeCompacted = sortNoteFoldersByDateLastModified(noteFoldersToBeCompacted);
+
+        //make a new note folder
+        NoteFolder newNoteFolder = createNoteFolder();
+
+        //make a string buffer
+        String buffer = "";
+
+        //latest date in the bunch
+        String firstDateBuffer = noteFoldersToBeCompacted.get(0).getDateLastModifiedStringWithoutTime();
+
+        //compact all of the contents into one buffer
+        buffer += "//"+firstDateBuffer+"\n\n";
+        for(NoteFolder noteFolder : noteFoldersToBeCompacted){
+            if(!firstDateBuffer.equals(noteFolder.getDateLastModifiedStringWithoutTime())){
+                firstDateBuffer = noteFolder.getDateLastModifiedStringWithoutTime();
+                buffer+="//"+firstDateBuffer+"\n\n";
+            }
+            buffer+="//"+noteFolder.getTimeLastModifiedString()+"\n"+noteFolder.getNotesText()+"\n\n";
+        }
+
+
+        //store the contents of the buffer in the new folder
+        newNoteFolder.setNotesText(buffer);
+
+        //delete old note folders
+        for(NoteFolder noteFolder : noteFoldersToBeCompacted){
+            noteFolder.delete();
+        }
+
+        return newNoteFolder;
+    }
 
 
 

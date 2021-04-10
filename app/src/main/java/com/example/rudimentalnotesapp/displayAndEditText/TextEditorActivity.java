@@ -5,28 +5,34 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.icu.text.LocaleDisplayNames;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 
 import com.example.rudimentalnotesapp.R;
+import com.example.rudimentalnotesapp.allPurposeFragments.SimpleInputDialogPromptFragment;
 import com.example.rudimentalnotesapp.collections.TemporaryCollection;
 import com.example.rudimentalnotesapp.filesystem.NoteFolder;
 import com.example.rudimentalnotesapp.filesystem.NoteFolderManager;
 import com.example.rudimentalnotesapp.mainNotesList.MainActivity;
 import com.example.rudimentalnotesapp.navigation.SimulateKeyPress;
 import com.example.rudimentalnotesapp.settings.Settings;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class TextEditorActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class TextEditorActivity extends AppCompatActivity implements SimpleInputDialogPromptFragment.DialogListener {
 
 
     //displayed text area
-    EditText textArea;
+    static EditText textArea;
 
     //caller's intent
     Intent intent;
@@ -40,6 +46,17 @@ public class TextEditorActivity extends AppCompatActivity {
     //text size
     static int textSize =18;
 
+    //search query
+    String userInput;
+
+
+    //navigate between search result tokens
+    FloatingActionButton nextTokenFAB;
+    FloatingActionButton previousTokenFAB;
+
+    //token positions
+    static ArrayList<Integer> tokenPositions;
+    static int currentPosition;
 
     //eigenreference
     public static TextEditorActivity textEditorActivity;
@@ -54,6 +71,43 @@ public class TextEditorActivity extends AppCompatActivity {
 
         //get text area
         textArea = findViewById(R.id.textArea);
+
+        //set search fab's on click action
+        FloatingActionButton searchFAB = findViewById(R.id.innerSearchFAB);
+        searchFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimpleInputDialogPromptFragment dialogFragment = new SimpleInputDialogPromptFragment();
+                dialogFragment.setDialogListener(textEditorActivity);
+                dialogFragment.show(getSupportFragmentManager(), "dialog fragment");
+            }
+        });
+
+        //get and set back and forth fabs' actions
+        nextTokenFAB = findViewById(R.id.nextTokenFAB);
+        previousTokenFAB = findViewById(R.id.previousTokenFAB);
+
+        nextTokenFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToNextToken();
+            }
+        });
+
+        previousTokenFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goBackToPreviousToken();
+            }
+        });
+
+
+
+
+
+
+
+
 
         //get text size from global settings and set it
         textSize = Settings.getTextSize();
@@ -72,13 +126,10 @@ public class TextEditorActivity extends AppCompatActivity {
         //get intent from caller
         intent = getIntent();
 
-
-
-
         //in case a note folder was passed
         try{
             //get note folder ID, and thus note folder
-            int noteFolderID = intent.getIntExtra("NOTE_FOLDER_ID", -1);
+            long noteFolderID = intent.getLongExtra("NOTE_FOLDER_ID", -1);
             noteFolder = NoteFolderManager.getNoteFolder(noteFolderID);
             //get text to be displayed from note folder that has been opened
             textToBeDisplayed = noteFolder.getNotesText();
@@ -88,8 +139,6 @@ public class TextEditorActivity extends AppCompatActivity {
         }catch (Exception e){
 
         }
-
-
 
 
         //if the text to be displayed comes from without the app:
@@ -155,6 +204,52 @@ public class TextEditorActivity extends AppCompatActivity {
     }
 
 
+    //move to a given position in the textArea
+    public void moveToPosition(int postion){
+        if(postion<0){
+            return; //no negative positions allowed
+        }
+
+        textArea.requestFocus();
+        textArea.setSelection(postion);
+    }
+
+
+    //method used to interface with input dialog.
+    //here I'm using to trigger search
+    @Override
+    public void getUserInput(String userInput) {
+        this.userInput = userInput;
+
+        //make navigation fabs visible
+        nextTokenFAB.setVisibility(View.VISIBLE);
+        previousTokenFAB.setVisibility(View.VISIBLE);
+
+        //get positions of queried text tokens
+        tokenPositions = noteFolder.getPositionsOf(userInput);
+
+        currentPosition = 0;
+        moveToPosition(tokenPositions.get(currentPosition));
+
+    }
+
+    //move to the next token
+    public void goToNextToken(){
+        if(tokenPositions.size()>currentPosition+1){
+            currentPosition++;
+            moveToPosition(tokenPositions.get(currentPosition));
+        }
+    }
+
+    //go back to the previous token
+    public void goBackToPreviousToken(){
+        if(currentPosition-1 >= 0){
+            currentPosition--;
+            moveToPosition(tokenPositions.get(currentPosition));
+        }
+    }
+
+
 
     ////////////////////////EXPERIMENTAL TEXT NAVIGATION WITH VOLUME KEYS///////////////////////
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -170,12 +265,6 @@ public class TextEditorActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
-
-
-
-
-
 
 
 
