@@ -20,6 +20,8 @@ for unifying scattered pieces of a larger work, once you realize they should all
 as the encrypted text. It is also possible to encrypt multiple files with the same key (in this case the OTP option isn't provided, for obvious reasons). The keys aren't stored in memory, so any attempt at decryption should be handled with care, as the app will run no checks on the validity of the decryption key provided
 by the user. The encryption algorithm currently used is a simple implementation of the Vigenere cipher: https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher.
 
+- high granularity: just a fancy way of saying that you can search for strings within a single note file too. (For example, if it's very long). The app lets you jump back and forth between occurrences of the queried string.
+
 - download text from a webpage: this feature is still experimental. It makes use of the Jsoup library to
 download (for now just the text) of a webpage, given a full link to it. (Jsoup's repo and license: https://github.com/jhy/jsoup/blob/master/LICENSE).
 
