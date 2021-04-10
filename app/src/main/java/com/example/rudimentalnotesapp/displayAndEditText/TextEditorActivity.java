@@ -221,12 +221,18 @@ public class TextEditorActivity extends AppCompatActivity implements SimpleInput
     public void getUserInput(String userInput) {
         this.userInput = userInput;
 
+        //get positions of queried text tokens
+        tokenPositions = noteFolder.getPositionsOf(userInput);
+
+        //if there are no tokens to be shown, don't go ahead
+        //and crash everything with an IndexOutOfBoundsException... :-)
+        if(tokenPositions.size()==0){
+            return;
+        }
+
         //make navigation fabs visible
         nextTokenFAB.setVisibility(View.VISIBLE);
         previousTokenFAB.setVisibility(View.VISIBLE);
-
-        //get positions of queried text tokens
-        tokenPositions = noteFolder.getPositionsOf(userInput);
 
         currentPosition = 0;
         moveToPosition(tokenPositions.get(currentPosition));
