@@ -1,13 +1,16 @@
 package com.example.rudimentalnotesapp.mainNotesList;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.rudimentalnotesapp.R;
@@ -56,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
     //refresh tag: tells the main activity it has to refresh its list
     public static boolean needToRefresh;
 
+
+
+    //APP-LIFE-CYCLE RELATED METHODS:
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,6 +218,9 @@ public class MainActivity extends AppCompatActivity {
         //reset to no collection displayed
         setCurrentlyDisplayedCollection(null);
 
+
+
+
     }
 
     //ON POST RESUME
@@ -239,13 +248,17 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.needToRefresh = false;
 
 
+
         //IF NO COLLECTION WAS THE CURRENT COLLECTION:
         //re-add ALL items once
         refreshAndReaddAll();
         //reset to no collection displayed
         setCurrentlyDisplayedCollection(null);
+
+
     }
 
+    //ON BACK PRESSED
     @Override
     public void onBackPressed() {
         //hide checkboxes
@@ -256,14 +269,29 @@ public class MainActivity extends AppCompatActivity {
         //if the back button was pressed
         //go back to displaying all of the
         //note items (no collection)
+
+
         //re-add ALL items once
         refreshAndReaddAll();
         //reset to no collection displayed
         setCurrentlyDisplayedCollection(null);
         //super.onBackPressed();
+
+
     }
 
 
+    //QUICK FIX FOR THE DREADED PHANTOM BUTTON ADDING BUG
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        //TO FIX GHOST BUTTON-ADDING BUG
+    }
+
+
+
+    ///////////////////////////////////////
+    //ITEM LIST MANAGEMENT METHODS
 
     //add an item to the currentItemsList and stick it to the
     //activity visually

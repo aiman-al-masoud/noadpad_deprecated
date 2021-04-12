@@ -81,7 +81,9 @@ public class ItemButtonFragment extends Fragment {
             button.setText(fileText.replace("\n", "")+"...");
 
 
+
             title = button.getText().toString();
+
 
 
             //set onclick listener for the button
