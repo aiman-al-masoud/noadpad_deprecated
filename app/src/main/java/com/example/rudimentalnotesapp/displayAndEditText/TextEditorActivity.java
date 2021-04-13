@@ -10,9 +10,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 
@@ -61,6 +63,9 @@ public class TextEditorActivity extends AppCompatActivity implements SimpleInput
     //eigenreference
     public static TextEditorActivity textEditorActivity;
 
+    //no saving flag
+    boolean noSavingFlag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +107,32 @@ public class TextEditorActivity extends AppCompatActivity implements SimpleInput
         });
 
 
+        //get the inner options FAB menu and set its action
+        FloatingActionButton innerOptionsFAB = findViewById(R.id.innerOptionsButton);
+        innerOptionsFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu innerOptionsMenu = new PopupMenu(textEditorActivity, innerOptionsFAB);
+                innerOptionsMenu.getMenuInflater().inflate(R.menu.inner_options_menu, innerOptionsMenu.getMenu());
+                innerOptionsMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case R.id.exitWithoutSavingItem:
+                                //exit (go back to main list view)
+                                //without saving changes to the noteFolder opened
+                                noSavingFlag = true;
+                                finish(); //takes you back to the previous activity
+                                break;
+                        }
+
+
+                        return true;
+                    }
+                });
+                innerOptionsMenu.show();
+            }
+        });
 
 
 
@@ -131,10 +162,18 @@ public class TextEditorActivity extends AppCompatActivity implements SimpleInput
             //get note folder ID, and thus note folder
             long noteFolderID = intent.getLongExtra("NOTE_FOLDER_ID", -1);
             noteFolder = NoteFolderManager.getNoteFolder(noteFolderID);
+
+            Log.d("NOTE_FOLDER", noteFolder.getID()+"");
+
             //get text to be displayed from note folder that has been opened
             textToBeDisplayed = noteFolder.getNotesText();
             //display initial text from note folder
             textArea.setText(textToBeDisplayed);
+            //go to bookmarked position
+            int bookmark = noteFolder.getBookmark();
+            if(bookmark!=0){
+                moveToPosition(bookmark);
+            }
             return;
         }catch (Exception e){
 
@@ -176,6 +215,15 @@ public class TextEditorActivity extends AppCompatActivity implements SimpleInput
     protected void onPause() {
         super.onPause();
 
+        //if no saving flag is on:
+        if(noSavingFlag){
+            noSavingFlag = false;
+            Toast.makeText(MainActivity.mainActivity, "no changes were made" , Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+
         //if no noteFolder was passed by caller
         if(noteFolder==null){
             return;
@@ -183,6 +231,7 @@ public class TextEditorActivity extends AppCompatActivity implements SimpleInput
 
         //get modified text from text area
         String modifiedText = textArea.getText().toString();
+
 
         //if file was modified
         if(!modifiedText.equals(textToBeDisplayed)){
@@ -200,6 +249,8 @@ public class TextEditorActivity extends AppCompatActivity implements SimpleInput
             //else tell user that no change was made
             Toast.makeText(MainActivity.mainActivity, "no changes were made" , Toast.LENGTH_SHORT).show();
         }
+
+        noteFolder.setBookmark(textArea.getSelectionStart());
 
     }
 
@@ -220,6 +271,11 @@ public class TextEditorActivity extends AppCompatActivity implements SimpleInput
     @Override
     public void getUserInput(String userInput) {
         this.userInput = userInput;
+
+        //if user input is empty just return
+        if(userInput.trim().isEmpty()){
+            return;
+        }
 
         //get positions of queried text tokens
         tokenPositions = noteFolder.getPositionsOf(userInput);

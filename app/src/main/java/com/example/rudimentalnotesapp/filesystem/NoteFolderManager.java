@@ -76,11 +76,22 @@ public class NoteFolderManager {
 
     //get a single note folder by its ID
     public static NoteFolder getNoteFolder(long ID){
+
+        for(NoteFolder noteFolder : currentNoteFoldersList){
+            if(noteFolder.getID()==ID){
+                return noteFolder;
+            }
+        }
+
+        //if you don't find it in the current ones
+
         NoteFolder noteFolder = new NoteFolder(rootPath+"/noteFolder"+ID);
         if(noteFolder.exists()){
             return noteFolder;
         }
         return null;
+
+
     }
 
 

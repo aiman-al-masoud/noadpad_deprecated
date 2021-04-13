@@ -50,7 +50,10 @@ public class DownloaderTask extends AsyncTask {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
-        Log.d("JSOUP", webpageText);
+
+        //make some newlines in between paragraphs
+        webpageText = webpageText.replace(".", ".\n\n");
+
         noteFolder.setNotesText(webpageText);
 
         if(launchTextEditorAfterDownload){

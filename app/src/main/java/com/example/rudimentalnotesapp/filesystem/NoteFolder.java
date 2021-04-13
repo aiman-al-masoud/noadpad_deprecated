@@ -34,6 +34,9 @@ public class NoteFolder extends File {
     //this is also gonna be part of the ID of a note folder
     long unixCreationTime;
 
+    //bookmark
+    public int bookmark;
+
     //encrypter
     private static Encrypter encrypter = new Encrypter();
 
@@ -115,6 +118,16 @@ public class NoteFolder extends File {
 
 
 
+    //HANDLING BOOKMARKS
+
+    //set bookmark position
+    public void setBookmark(int bookmark) {
+        this.bookmark = bookmark;
+    }
+    //get bookmark position
+    public int getBookmark() {
+        return bookmark;
+    }
 
     //HANDLING KEYWORD-SEARCH:
 
